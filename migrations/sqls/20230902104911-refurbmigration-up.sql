@@ -56,7 +56,7 @@ CREATE TABLE Users (
 -- Create Carts Table
 CREATE TABLE Carts (
     cart_id SERIAL PRIMARY KEY,
-    account_id INT REFERENCES Accounts(account_id)
+    user_id INT REFERENCES Users(user_id)
 );
 
 -- Create CartItems Table
