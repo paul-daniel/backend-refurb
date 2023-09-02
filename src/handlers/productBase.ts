@@ -69,10 +69,12 @@ const deleteProductBase = async (req: Request, res: Response) => {
   }
 }
 
-const productRoutes = (app: express.Application) => {
+const productBaseRoutes = (app: express.Application) => {
   app.get('/product', findAllProductBase)
   app.get('/product/:product_base_id', findProductBaseById)
   app.post('/product', createProductBase)
   app.put('/product/:product_base_id', updateProductBase)
   app.delete('/product/:product_base_id', deleteProductBase)
 }
+
+export default productBaseRoutes

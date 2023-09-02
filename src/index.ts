@@ -1,10 +1,10 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import morgan from 'morgan'
-import testRoutes from './handlers/test'
 import cors from 'cors'
 import helmet from 'helmet'
-import userRoutes from './handlers/user'
+import { cartRoutes, categoryRoutes, colorRoutes, productBaseRoutes, productVariantRoutes, screenSizeRoutes, storageRoutes, userRoutes } from './handlers'
+
 
 dotenv.config()
 
@@ -27,9 +27,14 @@ app.get('/', (req : express.Request, res : express.Response) => {
   res.send('hello world')
 })
 
+cartRoutes(app)
+categoryRoutes(app)
+colorRoutes(app)
+productVariantRoutes(app)
+productBaseRoutes(app)
+screenSizeRoutes(app)
+storageRoutes(app)
 userRoutes(app)
-testRoutes(app)
-
 
 app.listen(port, () => {
   console.log(`Server listening on port localhost:${port}`)
