@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS CartItems;
 DROP TABLE IF EXISTS Carts;
 
 -- Drop Accounts Table
-DROP TABLE IF EXISTS Accounts;
+DROP TABLE IF EXISTS Users;
 
 -- Drop ProductVariants Table
 DROP TABLE IF EXISTS ProductVariants;
@@ -25,7 +25,4 @@ DROP TABLE IF EXISTS Colors;
 
 -- Drop Categories Table
 DROP TABLE IF EXISTS Categories;
-
--- Drop users Table
-DROP TABLE IF EXISTS users;
 

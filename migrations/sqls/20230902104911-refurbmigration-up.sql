@@ -1,13 +1,4 @@
 /* Replace with your SQL commands */
--- Create Users Table
-CREATE TABLE Users (
-    user_id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    hashed_password VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN NOT NULL,
-    is_banned BOOLEAN NOT NULL DEFAULT FALSE
-);
-
 -- Create Categories Table
 CREATE TABLE Categories (
     category_id SERIAL PRIMARY KEY,
@@ -53,12 +44,13 @@ CREATE TABLE ProductVariants (
     stock_quantity INT NOT NULL
 );
 
--- Create Accounts Table
-CREATE TABLE Accounts (
-    account_id SERIAL PRIMARY KEY,
+-- Create Users Table
+CREATE TABLE Users (
+    user_id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     hashed_password VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN NOT NULL
+    is_admin BOOLEAN NOT NULL,
+    is_banned BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Create Carts Table
