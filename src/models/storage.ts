@@ -48,8 +48,25 @@ export class StorageRepository {
   async update(storage: Storage): Promise<Storage> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE Storages SET size=$1 WHERE storage_id = $2 RETURNING *'
-      const result = await conn.query<Storage>(sql, [storage.size, storage.storage_id])
+      let queryBase = 'UPDATE Storages SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(storage)) {
+        if(value && key !== 'storage_id') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE storage_id = $${counter} RETURNING *`
+
+      queryValues.push(storage.storage_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } catch (error) {
       throw new Error(`Unable to update storage with id ${storage.storage_id}: ${error}`)

@@ -49,8 +49,25 @@ export class ColorRepository {
   async update(color: Color): Promise<Color> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE Colors SET name=$1, hex_code=$2 WHERE color_id = $3 RETURNING *'
-      const result = await conn.query<Color>(sql, [color.name, color.hex_code, color.color_id])
+      let queryBase = 'UPDATE Colors SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(color)) {
+        if(value && key !== 'color_id') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE color_id = $${counter} RETURNING *`
+
+      queryValues.push(color.color_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } catch (error) {
       throw new Error(`Unable to update color with id ${color.color_id}: ${error}`)

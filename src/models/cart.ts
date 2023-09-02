@@ -50,8 +50,26 @@ export class CartRepository {
   async update(cart: Cart): Promise<Cart> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE Carts SET user_id=$1, variant_id=$2, quantity=$3 WHERE cart_id = $4 RETURNING *'
-      const result = await conn.query<Cart>(sql, [cart.user_id, cart.variant_id, cart.quantity, cart.cart_id])
+
+      let queryBase = 'UPDATE Carts SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(cart)) {
+        if(value && key === 'quantity') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE category_id = $${counter} RETURNING *`
+
+      queryValues.push(cart.cart_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } catch (error) {
       throw new Error(`Unable to update cart with id ${cart.cart_id}: ${error}`)

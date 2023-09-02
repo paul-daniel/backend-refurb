@@ -49,8 +49,25 @@ export class CategoryRepository {
   async update(category: Category): Promise<Category> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE Categories SET name=$1, description=$2 WHERE category_id = $3 RETURNING *'
-      const result = await conn.query<Category>(sql, [category.name, category.description, category.category_id])
+      let queryBase = 'UPDATE Categories SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(category)) {
+        if(value && key !== 'category_id') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE category_id = $${counter} RETURNING *`
+
+      queryValues.push(category.category_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } catch (error) {
       throw new Error(`Unable to update category with id ${category.category_id}: ${error}`)

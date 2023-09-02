@@ -56,13 +56,7 @@ CREATE TABLE Users (
 -- Create Carts Table
 CREATE TABLE Carts (
     cart_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id)
-);
-
--- Create CartItems Table
-CREATE TABLE CartItems (
-    cart_item_id SERIAL PRIMARY KEY,
-    cart_id INT REFERENCES Carts(cart_id),
+    user_id INT REFERENCES Users(user_id),
     variant_id INT REFERENCES ProductVariants(variant_id),
     quantity INT NOT NULL
 );

@@ -1,7 +1,4 @@
 /* Replace with your SQL commands */
--- Drop CartItems Table
-DROP TABLE IF EXISTS CartItems;
-
 -- Drop Carts Table
 DROP TABLE IF EXISTS Carts;
 

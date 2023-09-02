@@ -48,8 +48,25 @@ export class ScreenSizeRepository {
   async update(screenSize: ScreenSize): Promise<ScreenSize> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE ScreenSizes SET size=$1 WHERE screen_size_id = $2 RETURNING *'
-      const result = await conn.query<ScreenSize>(sql, [screenSize.size, screenSize.screen_size_id])
+      let queryBase = 'UPDATE ScreenSizes SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(screenSize)) {
+        if(value && key !== 'screen_size_id') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE screen_size_id = $${counter} RETURNING *`
+
+      queryValues.push(screenSize.screen_size_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } catch (error) {
       throw new Error(`Unable to update screen size with id ${screenSize.screen_size_id}: ${error}`)

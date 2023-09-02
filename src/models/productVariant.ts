@@ -53,8 +53,25 @@ export class ProductVariantRepository {
   async update(productVariant: ProductVariant): Promise<ProductVariant> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE ProductVariants SET product_base_id=$1, color_id=$2, storage_id=$3, screen_size_id=$4, price=$5, stock_quantity=$6 WHERE variant_id = $7 RETURNING *'
-      const result = await conn.query<ProductVariant>(sql, [productVariant.product_base_id, productVariant.color_id, productVariant.storage_id, productVariant.screen_size_id, productVariant.price, productVariant.stock_quantity, productVariant.variant_id])
+      let queryBase = 'UPDATE ProductVariants SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(productVariant)) {
+        if(value && key !== 'product_variant_id') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE productVariant_id = $${counter} RETURNING *`
+
+      queryValues.push(productVariant.variant_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } catch (error) {
       throw new Error(`Unable to update product variant with id ${productVariant.variant_id}: ${error}`)

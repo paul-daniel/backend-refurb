@@ -45,8 +45,25 @@ export class UserRepository {
   async update(user: User): Promise<User> {
     const conn = await client.connect()
     try {
-      const sql = 'UPDATE Users SET email=$1, hashed_password=$2, is_admin=$3, is_banned=$4 WHERE user_id = $5 RETURNING *'
-      const result = await conn.query<User>(sql, [user.email, user.hashed_password, user.is_admin, user.is_banned, user.user_id])
+      let queryBase = 'UPDATE Users SET'
+      let queryParts: string[] = []
+      let queryValues: any[] = []
+      let counter = 1
+
+      for(const [key, value] of Object.entries(user)) {
+        if(value && key !== 'user_id') {
+          queryParts.push(`${key} = $${counter}`);
+          queryValues.push(value);
+          counter++;
+        } 
+      }
+
+      queryBase += queryParts.join(',')
+      queryBase += `WHERE user_id = $${counter} RETURNING *`
+
+      queryValues.push(user.user_id)
+      
+      const result = await conn.query(queryBase, queryValues)
       return result.rows[0]
     } finally {
       conn.release()
